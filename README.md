@@ -2,13 +2,19 @@
 
 Listery is a simple single-page list management application built with Django and Backbone/Marionette. It has an intuitive drag and drop interface, supports multiple users with a simple shared list mechanic, and can export lists to text files.
 
+## Demo
+
+A Listery demo is available at https://dry-scrubland-6661.herokuapp.com/. There are two user accounts available:  
+Username: `demo1`, password: `demo1`  
+Username: `demo2`, password: `demo2`  
+
 ## Local setup
 
 You should be able to run Listery locally using the example project provided.
 
 ## Using Listery as an app
 
-1. Add the following to your `INSTALLED_APPS` in your project `settings.py` file:
+* Add the following to your `INSTALLED_APPS` in your project `settings.py` file:
 
 ```
 'ordered_model',
@@ -17,13 +23,13 @@ You should be able to run Listery locally using the example project provided.
 'listery',
 ```
 
-2. Add the following to your template context processors in your project `settings.py` file:
+* Add the following to your template context processors in your project `settings.py` file:
 
 ```
 'listery.context_processors.listery_info'
 ```
 
-3. Make sure your Django REST framework setup has session authentication and token authentication enabled. The settings are:
+* Make sure your Django REST framework setup has session authentication and token authentication enabled. The settings are:
 
 ```
 REST_FRAMEWORK = {
@@ -34,4 +40,4 @@ REST_FRAMEWORK = {
 }
 ```
 
-4. Optionally set your site title using the setting `LISTERY_TITLE`
+* Optionally set your site title using the setting `LISTERY_TITLE`
