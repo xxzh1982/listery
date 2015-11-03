@@ -1,12 +1,13 @@
 from django.contrib.auth.models import User
 from django.db import models
+from django.db.transaction import atomic
 from ordered_model.models import OrderedModel
 
 from listery.signals import *
 
 
 class List(OrderedModel):
-	name = models.CharField(max_length=255, unique=True)
+	name = models.CharField(max_length=255)
 	created_at = models.DateTimeField(auto_now_add=True)
 	updated_at = models.DateTimeField(auto_now=True)
 	archived = models.BooleanField(default=False)
@@ -41,6 +42,17 @@ class List(OrderedModel):
 		if move_to_top:
 			self.to(1)
 	
+	@atomic
+	def reindex(self):
+		index = 1
+		for item in self.items:
+			old_order = item.order
+			if old_order != index:
+				item.order = index
+				item.save()
+			index += 1
+	
+	@atomic
 	def quick_sort(self):
 		index = 1
 		non_completed = self.items.filter(completed=False).order_by('title')
@@ -69,12 +81,17 @@ class ListItem(OrderedModel):
 	
 	def save(self, *args, **kwargs):
 		move_to_top = False
+		old_list = None
 		if not self.pk:
 			move_to_top = True
 		else:
 			old_item = ListItem.objects.get(id=self.pk)
 			if old_item.list != self.list:
+				old_list = old_item.list
 				move_to_top = True
 		super(ListItem, self).save(*args, **kwargs)
 		if move_to_top:
 			self.to(1)
+			self.list.reindex()
+		if old_list:
+			old_list.reindex()
